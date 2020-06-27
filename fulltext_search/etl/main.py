@@ -29,9 +29,8 @@ def prepare_sqlite_data(sqlite_data):
 
 def prepare_data_to_bulk_create(movies):
     bulk_data = ''
-    for id_, movie in enumerate(movies, 1):
-        bulk_data += '{{"index": {{"_index": "movies", "_id": "my_id_{}"}}}}\n'.format(
-            id_)
+    for movie in movies:
+        bulk_data += '{{"index": {{"_index": "movies", "_id": "{}"}}}}\n'.format(movie.id)
         fields = {
             'id': movie.id,
             'imdb_rating': float(movie.imdb_rating if movie.imdb_rating != 'N/A' else 0),
