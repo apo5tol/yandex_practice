@@ -7,8 +7,7 @@ ELASTIC_URL = "http://127.0.0.1:9200"
 
 app = Flask(__name__)
 
-
-@app.route("/movies/<movie_id>", methods=["GET"])
+@app.route("/api/movies/<movie_id>", methods=["GET"])
 def movie_info(movie_id):
     movie_info_url = "{url}/movies/_doc/{movie_id}".format(
         url=ELASTIC_URL, movie_id=movie_id
