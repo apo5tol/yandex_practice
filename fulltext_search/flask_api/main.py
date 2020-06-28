@@ -8,14 +8,6 @@ ELASTIC_URL = "http://127.0.0.1:9200"
 app = Flask(__name__)
 
 
-def prepare_actors_data(actors):
-    result = []
-    for actor in actors:
-        result.append({"id": int(actor["id"]), "name": actor["name"]})
-
-    return result
-
-
 @app.route("/movies/<movie_id>", methods=["GET"])
 def movie_info(movie_id):
     movie_info_url = "{url}/movies/_doc/{movie_id}".format(
@@ -33,7 +25,7 @@ def movie_info(movie_id):
         "description": elastic_movie_data["description"],
         "imdb_rating": elastic_movie_data["imdb_rating"],
         "writers": elastic_movie_data["writers"],
-        "actors": prepare_actors_data(elastic_movie_data["actors"]),
+        "actors": elastic_movie_data["actors"],
         "genre": elastic_movie_data["genre"],
         "director": elastic_movie_data["director"],
     }
