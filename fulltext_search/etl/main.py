@@ -3,12 +3,12 @@ from collections import namedtuple
 import json
 import requests
 
-EL_BULK_URL = 'http://127.0.0.1:9200/_bulk'
+EL_BULK_URL = "http://127.0.0.1:9200/_bulk"
 EMPTY_VALUE = "N/A"
 
 
 def download_sqlite_data():
-    connnectioon = sqlite3.connect('db.sqlite')
+    connnectioon = sqlite3.connect("db.sqlite")
     cursor = connnectioon.cursor()
 
     sql = """ SELECT m.id, m.imdb_rating, m.genre, m.title, m.plot AS description, m.director, GROUP_CONCAT(a.name,', ') AS actors_names, 
@@ -23,8 +23,21 @@ def download_sqlite_data():
 
 
 def prepare_sqlite_data(sqlite_data):
-    Movie = namedtuple('Movie', ['id', 'imdb_rating', 'genre', 'title', 'description',
-                                 'director', 'actors_names', 'writers_names', 'actors', 'writers'])
+    Movie = namedtuple(
+        "Movie",
+        [
+            "id",
+            "imdb_rating",
+            "genre",
+            "title",
+            "description",
+            "director",
+            "actors_names",
+            "writers_names",
+            "actors",
+            "writers",
+        ],
+    )
     return list(map(Movie._make, sqlite_data))
 
 
@@ -69,20 +82,15 @@ def prepare_data_to_bulk_create(movies):
 
 
 def send_bulk_request(bulk_data):
-    headers = {
-        "Content-Type": "application/x-ndjson"
-    }
-    payload = {
-        "filter_path": "items.*.error"
-    }
+    headers = {"Content-Type": "application/x-ndjson"}
+    payload = {"filter_path": "items.*.error"}
 
-    resp = requests.post(EL_BULK_URL, params=payload,
-                         headers=headers, data=bulk_data)
+    resp = requests.post(EL_BULK_URL, params=payload, headers=headers, data=bulk_data)
 
     print("Incorrect items: {}".format(resp.json()))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sqlite_data = download_sqlite_data()
     data = prepare_sqlite_data(sqlite_data)
     bulk_data = prepare_data_to_bulk_create(data)
