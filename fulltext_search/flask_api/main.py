@@ -15,7 +15,7 @@ def movie_info(movie_id):
     response = requests.get(movie_info_url)
     resp_data = response.json()
     if not resp_data["found"]:
-        return abort(404, description="Фильм не найден")
+        return ("Фильм не найден", 404)
 
     elastic_movie_data = resp_data["_source"]
     answer = {
