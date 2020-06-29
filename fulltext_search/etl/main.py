@@ -41,8 +41,18 @@ def prepare_sqlite_data(sqlite_data):
     return list(map(Movie._make, sqlite_data))
 
 
-def filter_entity_list(entity):
-    return entity["name"] != EMPTY_VALUE
+def valid_obj_list(objects):
+    return list(filter(lambda object_: object_["name"] != EMPTY_VALUE, objects))
+
+
+def valid_str_value(value):
+    return value if value != EMPTY_VALUE else ""
+
+
+def to_list(str_):
+    if str_:
+        return list(map(lambda value: value.strip(), str_.split(",")))
+    return []
 
 
 def prepare_data_to_bulk_create(movies):
@@ -56,24 +66,14 @@ def prepare_data_to_bulk_create(movies):
             "imdb_rating": float(
                 movie.imdb_rating if movie.imdb_rating != EMPTY_VALUE else 0
             ),
-            "genre": movie.genre.split(","),
+            "genre": to_list(movie.genre),
             "title": movie.title,
-            "description": movie.description
-            if movie.description != EMPTY_VALUE
-            else "",
-            "director": movie.director if movie.director != EMPTY_VALUE else "",
-            "actors_names": movie.actors_names.split(",")
-            if movie.actors_names != EMPTY_VALUE
-            else [],
-            "writers_names": movie.writers_names.split(",")
-            if movie.writers_names != EMPTY_VALUE
-            else [],
-            "actors": list(
-                filter(filter_entity_list, json.loads("[{}]".format(movie.actors)))
-            ),
-            "writers": list(
-                filter(filter_entity_list, json.loads("[{}]".format(movie.writers)))
-            ),
+            "description": valid_str_value(movie.description),
+            "director": to_list(valid_str_value(movie.director)),
+            "actors_names": to_list(valid_str_value(movie.actors_names)),
+            "writers_names": to_list(valid_str_value(movie.writers_names)),
+            "actors": valid_obj_list(json.loads("[{}]".format(movie.actors))),
+            "writers": valid_obj_list(json.loads("[{}]".format(movie.writers))),
         }
         fields = json.dumps(fields)
         bulk_data += "{}\n".format(fields)
